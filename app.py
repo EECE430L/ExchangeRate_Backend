@@ -30,6 +30,12 @@ app.register_blueprint(authentication)
 app.register_blueprint(statistics)
 app.register_blueprint(fluctuations)
 
+
+@app.route('/', methods=['GET'])
+def home():
+    return 'Welcome to exchange rate backend'
+
+
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", debug=True)
     app.run(debug=True)
