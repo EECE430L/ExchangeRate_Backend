@@ -8,7 +8,7 @@ import jwt
 transactions = Blueprint('transactions', __name__, url_prefix='/transaction')
 
 
-@transactions.route('/', methods=['POST'])
+@transactions.route('/', methods=['POST'], strict_slashes=False)
 def create_transaction():
 
     errors = {}
@@ -52,7 +52,7 @@ def create_transaction():
     return jsonify(transaction_schema.dump(transaction)), 201
 
 
-@transactions.route('/', methods=['GET'])
+@transactions.route('/', methods=['GET'], strict_slashes=False)
 def get_user_transactions():
 
     auth_token = extract_auth_token(request)

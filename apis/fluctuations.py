@@ -3,10 +3,11 @@ import datetime
 from services.utils import getExchangeRates
 
 
-fluctuations = Blueprint('fluctuations', __name__, url_prefix='/fluctuations')
+fluctuations = Blueprint('fluctuations', __name__,
+                         url_prefix='/fluctuations')
 
 
-@fluctuations.route('/', methods=['GET'])
+@fluctuations.route('/', methods=['GET'], strict_slashes=False)
 def get_exchangeRateFluctuations():
     args = request.args
     startYear = int(args.get('startYear'))

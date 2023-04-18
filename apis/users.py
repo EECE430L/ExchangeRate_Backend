@@ -6,7 +6,7 @@ from config.database import db
 users = Blueprint('users', __name__, url_prefix='/user')
 
 
-@users.route('/', methods=['POST'])
+@users.route('/', methods=['POST'], strict_slashes=False)
 def signup():
 
     errors = {}

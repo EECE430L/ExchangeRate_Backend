@@ -7,7 +7,7 @@ from services.utils import getExchangeRates
 statistics = Blueprint('statistics', __name__, url_prefix='/statistics')
 
 
-@statistics.route('/todays-transactions', methods=['GET'])
+@statistics.route('/todays-transactions', methods=['GET'], strict_slashes=False)
 def get_todays_transactions():
     now = datetime.datetime.now()
     START_DATE = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
@@ -30,7 +30,7 @@ def get_todays_transactions():
     return jsonify(response), 200
 
 
-@statistics.route('/rates-percent-change', methods=['GET'])
+@statistics.route('/rates-percent-change', methods=['GET'], strict_slashes=False)
 def get_rates_percent_change():
 
     now = datetime.datetime.now()

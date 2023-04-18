@@ -4,10 +4,11 @@ from services.utils import getExchangeRates
 import datetime
 
 
-exchangeRate = Blueprint('exchangeRate', __name__, url_prefix='/exchangeRate')
+exchangeRate = Blueprint('exchangeRate', __name__,
+                         url_prefix='/exchangeRate')
 
 
-@exchangeRate.route('/', methods=['GET'])
+@exchangeRate.route('/', methods=['GET'], strict_slashes=False)
 def get_exchange_rate():
 
     START_DATE = datetime.datetime.now() - datetime.timedelta(days=3)
