@@ -6,14 +6,19 @@ from apis.exchangeRate import exchangeRate
 from apis.transactions import transactions
 from flask import Flask
 from flask_cors import CORS
-from config.database import db, DB_CONFIG
+from config.database import db
 from config.marshmallow import ma
 from config.bcrypt import bcrypt
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONFIG
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_CONFIG')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app, supports_credentials=True)
+
 
 db.app = app
 db.init_app(app)
@@ -38,4 +43,6 @@ def home():
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", debug=True)
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)

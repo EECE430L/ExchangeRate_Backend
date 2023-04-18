@@ -1,6 +1,7 @@
 import jwt
 import datetime
-from services.auth_config import SECRET_KEY
+import os
+
 
 def create_token(user_id):
 
@@ -12,7 +13,7 @@ def create_token(user_id):
 
     return jwt.encode(
         payload,
-        SECRET_KEY,
+        os.environ.get('SECRET_KEY'),
         algorithm='HS256'
     )
 
@@ -23,8 +24,8 @@ def extract_auth_token(authenticated_request):
         return auth_header.split(" ")[1]
     else:
         return None
-    
+
 
 def decode_token(token):
-    payload = jwt.decode(token, SECRET_KEY, 'HS256')
+    payload = jwt.decode(token, os.environ.get('SECRET_KEY'), 'HS256')
     return payload['sub']
