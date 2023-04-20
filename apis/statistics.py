@@ -59,3 +59,9 @@ def get_rates_percent_change():
     }
 
     return jsonify(response), 200
+
+
+# last period volume
+# percentiles
+# average transaction amount
+# average transaction amount per user

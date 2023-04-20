@@ -7,7 +7,7 @@ authentication = Blueprint('authentication', __name__,
                            url_prefix='/authentication')
 
 
-@authentication.route('/', methods=['POST'])
+@authentication.route('/', methods=['POST'], strict_slashes=False)
 def authenticate():
 
     errors = {}
