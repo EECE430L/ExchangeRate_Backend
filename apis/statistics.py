@@ -44,11 +44,12 @@ def get_rates_percent_change():
     yesterdayExchangeRate = getExchangeRates(YESTERDAY_START, YESTERDAY_END)
     todayExchangeRate = getExchangeRates(TODAY_START, TODAY_END)
 
-    changeUSDtoLBP = "Not available: no USD to LBP transactions were done yesterday"
+    changeUSDtoLBP = None
     if (yesterdayExchangeRate[0] != 0):
         changeUSDtoLBP = (
             (todayExchangeRate[0] - yesterdayExchangeRate[0]) / yesterdayExchangeRate[0]) * 100
-    changeLBPtoUSD = "Not available : no LBP to USD transactions were done yesterday"
+
+    changeLBPtoUSD = None
     if (yesterdayExchangeRate[1] != 0):
         changeLBPtoUSD = (
             (todayExchangeRate[1] - yesterdayExchangeRate[1]) / yesterdayExchangeRate[1]) * 100

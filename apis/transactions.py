@@ -13,7 +13,7 @@ transactions = Blueprint('transactions', __name__, url_prefix='/transaction')
 def create_transaction():
 
     errors = {}
-    receiver = "Third Party"
+    second_party = "Third Party"
 
     if ('usd_amount' not in request.json):
         errors['usd_amount'] = 'float is missing'
@@ -48,17 +48,17 @@ def create_transaction():
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
             abort(401)
 
-    if ('receiver' in request.json):
-        receiver = request.json['receiver']
-        foundReceiver = User.query.filter_by(
-            user_name=receiver).first()
-        if (not foundReceiver):
-            return jsonify({"receiver": f"A receiver with username {receiver} was not found"}), 404
-        elif (foundReceiver.id == user_id):
+    if ('second_party' in request.json):
+        second_party = request.json['second_party']
+        SecondParty = User.query.filter_by(
+            user_name=second_party).first()
+        if (not SecondParty):
+            return jsonify({"receiver": f"A user with username {second_party} was not found"}), 404
+        elif (SecondParty.id == user_id):
             return jsonify({"receiver": "You cannot send money to yourself"}), 400
 
     transaction = Transaction(
-        usd_amount=usd_amount, lbp_amount=lbp_amount, usd_to_lbp=usd_to_lbp, receiver=receiver, user_id=user_id)
+        usd_amount=usd_amount, lbp_amount=lbp_amount, usd_to_lbp=usd_to_lbp, second_party=second_party, user_id=user_id)
 
     db.session.add(transaction)
     db.session.commit()

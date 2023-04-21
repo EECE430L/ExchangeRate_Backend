@@ -4,6 +4,7 @@ from apis.authentication import authentication
 from apis.users import users
 from apis.exchangeRate import exchangeRate
 from apis.transactions import transactions
+from apis.offers import offers
 from flask import Flask
 from flask_cors import CORS
 from config.database import db
@@ -34,6 +35,7 @@ app.register_blueprint(users)
 app.register_blueprint(authentication)
 app.register_blueprint(statistics)
 app.register_blueprint(fluctuations)
+app.register_blueprint(offers)
 
 
 @app.route('/', methods=['GET'])

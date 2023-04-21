@@ -36,22 +36,22 @@ class Transaction(db.Model):
     lbp_amount = db.Column(db.Float)
     usd_to_lbp = db.Column(db.Boolean)
     added_date = db.Column(db.DateTime)
-    receiver = db.Column(db.String(30), nullable=True)
+    second_party = db.Column(db.String(30), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey(
         'ExchangeRate.user.id'), nullable=True)
 
-    def __init__(self, usd_amount, lbp_amount, usd_to_lbp, user_id=None, receiver=None):
+    def __init__(self, usd_amount, lbp_amount, usd_to_lbp, user_id=None, second_party=None):
         super(Transaction, self).__init__(usd_amount=usd_amount,
                                           lbp_amount=lbp_amount, usd_to_lbp=usd_to_lbp,
                                           user_id=user_id,
-                                          receiver=receiver,
+                                          second_party=second_party,
                                           added_date=datetime.datetime.now())
 
 
 class TransactionSchema(ma.Schema):
     class Meta:
         fields = ("id", "usd_amount", "lbp_amount",
-                  "usd_to_lbp", "user_id", "added_date", "receiver")
+                  "usd_to_lbp", "user_id", "added_date", "second_party")
         model = Transaction
 
 
@@ -59,16 +59,27 @@ transaction_schema = TransactionSchema()
 transactions_schema = TransactionSchema(many=True)
 
 
-class offer(db.Model):
-    __tablename__ = 'offer'
+class Offer(db.Model):
+    __tablename__ = 'Offer'
     __table_args__ = {'schema': 'exchangeRate'}
     id = db.Column(db.Integer, primary_key=True)
     offerer = db.Column(db.String(30))
     receiver = db.Column(db.String(30))
     offered_amount = db.Column(db.Float)
-    request_amount = db.Column(db.Float)
+    requested_amount = db.Column(db.Float)
     usd_to_lbp = db.Column(db.Boolean)
 
-    def __init__(self, offerer, receiver, offered_amount, request_amount, usd_to_lbp):
-        super(offer, self).__init__(offerer=offerer, receiver=receiver,
-                                    offered_amount=offered_amount, request_amount=request_amount, usd_to_lbp=usd_to_lbp)
+    def __init__(self, offerer, receiver, offered_amount, requested_amount, usd_to_lbp):
+        super(Offer, self).__init__(offerer=offerer, receiver=receiver,
+                                    offered_amount=offered_amount, requested_amount=requested_amount, usd_to_lbp=usd_to_lbp)
+
+
+class OfferSchema(ma.Schema):
+    class Meta:
+        fields = ("id", "offerer", "receiver", "offered_amount",
+                  "requested_amount", "usd_to_lbp")
+        model = Offer
+
+
+offer_schema = OfferSchema()
+offers_schema = OfferSchema(many=True)
