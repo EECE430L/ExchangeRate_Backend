@@ -167,7 +167,7 @@ def process_offer():
     if (receiver_id != user_id):
         return jsonify({"offer_id": f"You are not authorized to process this offer"}), 401
 
-    transactionsCreated = []
+    transactionsCreated = None
 
     if (accepted):
 
