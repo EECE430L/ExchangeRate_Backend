@@ -189,8 +189,7 @@ def process_offer():
             db.session.add(receiverTransaction)
             db.session.commit()
 
-            transactionsCreated.append(senderTransaction)
-            transactionsCreated.append(receiverTransaction)
+            transactionsCreated = [senderTransaction, receiverTransaction]
 
         else:
             senderTransaction = Transaction(lbp_amount=offer.offered_amount,
@@ -210,8 +209,7 @@ def process_offer():
             db.session.add(receiverTransaction)
             db.session.commit()
 
-            transactionsCreated.append(senderTransaction)
-            transactionsCreated.append(receiverTransaction)
+            transactionsCreated = [senderTransaction, receiverTransaction]
 
     Offer.query.filter_by(id=offer_id).delete()
     db.session.commit()
