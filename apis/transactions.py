@@ -47,6 +47,8 @@ def create_transaction():
             user_id = decode_token(auth_token)
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
             abort(401)
+    else:
+        return jsonify({"auth_token": "No token was provided"}), 401
 
     if ('second_party' in request.json):
         second_party = request.json['second_party']
