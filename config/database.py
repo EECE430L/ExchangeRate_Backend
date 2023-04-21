@@ -36,22 +36,39 @@ class Transaction(db.Model):
     lbp_amount = db.Column(db.Float)
     usd_to_lbp = db.Column(db.Boolean)
     added_date = db.Column(db.DateTime)
+    receiver = db.Column(db.String(30), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey(
         'ExchangeRate.user.id'), nullable=True)
 
-    def __init__(self, usd_amount, lbp_amount, usd_to_lbp, user_id=None):
+    def __init__(self, usd_amount, lbp_amount, usd_to_lbp, user_id=None, receiver=None):
         super(Transaction, self).__init__(usd_amount=usd_amount,
                                           lbp_amount=lbp_amount, usd_to_lbp=usd_to_lbp,
                                           user_id=user_id,
+                                          receiver=receiver,
                                           added_date=datetime.datetime.now())
 
 
 class TransactionSchema(ma.Schema):
     class Meta:
         fields = ("id", "usd_amount", "lbp_amount",
-                  "usd_to_lbp", "user_id", "added_date")
+                  "usd_to_lbp", "user_id", "added_date", "receiver")
         model = Transaction
 
 
 transaction_schema = TransactionSchema()
 transactions_schema = TransactionSchema(many=True)
+
+
+class offer(db.Model):
+    __tablename__ = 'offer'
+    __table_args__ = {'schema': 'exchangeRate'}
+    id = db.Column(db.Integer, primary_key=True)
+    offerer = db.Column(db.String(30))
+    receiver = db.Column(db.String(30))
+    offered_amount = db.Column(db.Float)
+    request_amount = db.Column(db.Float)
+    usd_to_lbp = db.Column(db.Boolean)
+
+    def __init__(self, offerer, receiver, offered_amount, request_amount, usd_to_lbp):
+        super(offer, self).__init__(offerer=offerer, receiver=receiver,
+                                    offered_amount=offered_amount, request_amount=request_amount, usd_to_lbp=usd_to_lbp)

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, abort
 from config.database import db
 from config.database import Transaction, transaction_schema, transactions_schema
+from config.database import User
 from services.auth import extract_auth_token, decode_token
 import jwt
 
@@ -12,6 +13,7 @@ transactions = Blueprint('transactions', __name__, url_prefix='/transaction')
 def create_transaction():
 
     errors = {}
+    receiver = "Third Party"
 
     if ('usd_amount' not in request.json):
         errors['usd_amount'] = 'float is missing'
@@ -28,6 +30,9 @@ def create_transaction():
     elif (type(request.json['usd_to_lbp']) != bool):
         errors['usd_to_lbp'] = 'must be a boolean'
 
+    if ('receiver' in request.json and type(request.json['receiver']) != str):
+        errors['receiver'] = 'must be a string'
+
     if (len(errors) != 0):
         return jsonify(errors), 400
 
@@ -43,8 +48,17 @@ def create_transaction():
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
             abort(401)
 
+    if ('receiver' in request.json):
+        receiver = request.json['receiver']
+        foundReceiver = User.query.filter_by(
+            user_name=receiver).first()
+        if (not foundReceiver):
+            return jsonify({"receiver": f"A receiver with username {receiver} was not found"}), 404
+        elif (foundReceiver.id == user_id):
+            return jsonify({"receiver": "You cannot send money to yourself"}), 400
+
     transaction = Transaction(
-        usd_amount=usd_amount, lbp_amount=lbp_amount, usd_to_lbp=usd_to_lbp, user_id=user_id)
+        usd_amount=usd_amount, lbp_amount=lbp_amount, usd_to_lbp=usd_to_lbp, receiver=receiver, user_id=user_id)
 
     db.session.add(transaction)
     db.session.commit()
