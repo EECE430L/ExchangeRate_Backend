@@ -41,11 +41,11 @@ def signup():
 
     userWithTheSameUsername = User.query.filter_by(user_name=user_name).first()
     if userWithTheSameUsername:
-        return {'error': f'username {user_name} is taken'}, 409
+        return {'username': f'username {user_name} is taken'}, 409
 
     userWithTheSameEmail = User.query.filter_by(email=email).first()
     if userWithTheSameEmail:
-        return {'error': f'email {email} is taken'}, 409
+        return {'email': f'email {email} is taken'}, 409
 
     user = User(user_name=user_name, password=password, email=email)
     db.session.add(user)
