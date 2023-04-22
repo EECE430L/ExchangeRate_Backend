@@ -3,6 +3,7 @@ from config.database import db
 from config.database import Transaction, transaction_schema, transactions_schema
 from config.database import User, Offer, offers_schema, offer_schema
 from services.auth import extract_auth_token, decode_token
+from services.utils import send_email
 import jwt
 
 
@@ -165,11 +166,15 @@ def process_offer():
     receiver_id = receiver.id
 
     if (receiver_id != user_id):
-        return jsonify({"offer_id": f"You are not authorized to process this offer"}), 401
+        return jsonify({"offer_id": f"User with id {user_id} is not authorized to process this offer"}), 401
 
     transactionsCreated = None
 
-    if (accepted):
+    if (not accepted):
+        send_email(sender.email, "Offer Rejected",
+                   f"Your offer with id {offer_id} was rejected by {receiver_username}.")
+
+    else:
 
         if (offer.usd_to_lbp):
             senderTransaction = Transaction(usd_amount=offer.offered_amount,
@@ -191,6 +196,9 @@ def process_offer():
 
             transactionsCreated = [senderTransaction, receiverTransaction]
 
+            send_email(sender.email, "Offer Accepted",
+                       f"Your offer with id {offer_id} was accepted by {receiver_username}.")
+
         else:
             senderTransaction = Transaction(lbp_amount=offer.offered_amount,
                                             usd_amount=offer.requested_amount,
@@ -201,7 +209,7 @@ def process_offer():
             receiverTransaction = Transaction(lbp_amount=offer.offered_amount,
                                               usd_amount=offer.requested_amount,
                                               usd_to_lbp=offer.usd_to_lbp,
-                                              SecondParty=sender_username,
+                                              second_party=sender_username,
                                               user_id=receiver_id)
 
             db.session.add(senderTransaction)
@@ -210,6 +218,9 @@ def process_offer():
             db.session.commit()
 
             transactionsCreated = [senderTransaction, receiverTransaction]
+
+            send_email(sender.email, "Offer Accepted",
+                       f"Your offer with id {offer_id} was accepted by {receiver_username}.")
 
     Offer.query.filter_by(id=offer_id).delete()
     db.session.commit()

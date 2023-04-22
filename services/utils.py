@@ -1,4 +1,8 @@
 from config.database import Transaction
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import os
 
 
 def getExchangeRates(START_DATE, END_DATE):
@@ -23,3 +27,21 @@ def getExchangeRates(START_DATE, END_DATE):
     lbp_to_usd_rate = round(lbp_to_usd_rate, 2)
 
     return usd_to_lbp_rate, lbp_to_usd_rate
+
+
+def send_email(to_email, subject, content):
+    msg = MIMEMultipart()
+    sender = os.environ.get('EMAIL')
+    msg['From'] = sender
+    msg['To'] = to_email
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(content, 'plain'))
+
+    try:
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
+            server.login(sender, os.environ.get('EMAIL_PASSWORD'))
+            server.sendmail(sender, to_email, msg.as_string())
+    except Exception as e:
+        print(f"Error sending email: {e}")
