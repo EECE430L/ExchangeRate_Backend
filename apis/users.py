@@ -1,7 +1,9 @@
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, abort
 from config.database import User, user_schema
 from config.database import db
 from email_validator import validate_email, EmailNotValidError
+from services.auth import extract_auth_token, decode_token
+import jwt
 
 
 users = Blueprint('users', __name__, url_prefix='/user')
@@ -52,3 +54,24 @@ def signup():
     db.session.commit()
 
     return jsonify(user_schema.dump(user)), 201
+
+
+@users.route('/', methods=['GET'], strict_slashes=False)
+def get_user_info():
+
+    auth_token = extract_auth_token(request)
+    user_id = None
+    if auth_token:
+        try:
+            user_id = decode_token(auth_token)
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
+            abort(401)
+    else:
+        return jsonify({"auth_token": "No token was provided"}), 401
+
+    user = User.query.filter_by(id=user_id).first()
+
+    if (not user):
+        return jsonify({"user": f"User with id {user_id} found"}), 404
+
+    return jsonify(user_schema.dump(user)), 200
