@@ -31,9 +31,9 @@ def authenticate():
     user = User.query.filter_by(user_name=user_name).first()
 
     if not user:
-        abort(401)
+        abort(404)
 
     if not bcrypt.check_password_hash(user.hashed_password, password):
-        abort(404)
+        abort(401)
 
     return {"token": create_token(user.id)}, 200
