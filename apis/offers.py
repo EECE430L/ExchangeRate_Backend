@@ -73,7 +73,7 @@ def send_offer():
     return jsonify(offer_schema.dump(offer)), 201
 
 
-@offers.route('/sended', methods=['GET'], strict_slashes=False)
+@offers.route('/sent', methods=['GET'], strict_slashes=False)
 def get_all_user_sended_offers():
 
     auth_token = extract_auth_token(request)

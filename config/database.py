@@ -2,6 +2,7 @@ from config.marshmallow import ma
 from config.bcrypt import bcrypt
 from flask_sqlalchemy import SQLAlchemy
 import datetime
+import pytz
 
 db = SQLAlchemy()
 # DB_CONFIG = 'mysql+pymysql://root:Rorokassab2002!@localhost:3306/exchange'
@@ -47,7 +48,8 @@ class Transaction(db.Model):
                                           lbp_amount=lbp_amount, usd_to_lbp=usd_to_lbp,
                                           user_id=user_id,
                                           second_party=second_party,
-                                          added_date=datetime.datetime.now())
+                                          added_date=datetime.datetime.now(
+                                              pytz.timezone('Asia/Beirut')))
 
 
 class TransactionSchema(ma.Schema):
