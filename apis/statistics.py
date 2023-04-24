@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify
 import datetime
 from config.database import Transaction
 from services.utils import getExchangeRates
+import pytz
 
 
 statistics = Blueprint('statistics', __name__, url_prefix='/statistics')
@@ -33,7 +34,7 @@ def get_todays_transactions():
 @statistics.route('/rates-percent-change', methods=['GET'], strict_slashes=False)
 def get_rates_percent_change():
 
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(pytz.timezone('Asia/Beirut'))
     YESTERDAY_START = datetime.datetime(
         now.year, now.month, now.day, 0, 0, 0) - datetime.timedelta(days=1)
     YESTERDAY_END = datetime.datetime(
@@ -42,7 +43,8 @@ def get_rates_percent_change():
     TODAY_END = now
 
     yesterdayExchangeRate = getExchangeRates(YESTERDAY_START, YESTERDAY_END)
-    todayExchangeRate = getExchangeRates(TODAY_START, TODAY_END)
+    todayExchangeRate = getExchangeRates(
+        TODAY_START, datetime.datetime.now(pytz.timezone('Asia/Beirut')))
 
     changeUSDtoLBP = None
     if (yesterdayExchangeRate[0] != 0):
