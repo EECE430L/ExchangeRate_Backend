@@ -40,9 +40,9 @@ def get_exchangeRateFluctuationsUSD():
         if (lbp_to_usd_rate == 0):
             lbp_to_usd_rate = "No Data Available"
 
-        FluctuationResponse = FluctuationResponse(
+        FluctuationResponse_ = FluctuationResponse(
             start_of_period, usd_to_lbp_rate, lbp_to_usd_rate)
-        fluctuations.append(FluctuationResponse.serialize())
+        fluctuations.append(FluctuationResponse_.serialize())
         current_date += datetime.timedelta(days=1)
 
     return jsonify(fluctuations), 200
