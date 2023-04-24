@@ -10,17 +10,17 @@ statistics = Blueprint('statistics', __name__, url_prefix='/statistics')
 
 @statistics.route('/todays-transactions', methods=['GET'], strict_slashes=False)
 def get_todays_transactions():
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(pytz.timezone('Asia/Beirut'))
     START_DATE = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
     END_DATE = now
 
     numberOfUSDtoLBPTransactions = Transaction.query.filter(
         Transaction.added_date.between(
-            START_DATE, END_DATE), Transaction.usd_to_lbp == True
+            START_DATE, datetime.datetime.now(pytz.timezone('Asia/Beirut'))), Transaction.usd_to_lbp == True
     ).count()
     numberOfLBPtoUSDTransactions = Transaction.query.filter(
         Transaction.added_date.between(
-            START_DATE, END_DATE), Transaction.usd_to_lbp == False
+            START_DATE, datetime.datetime.now(pytz.timezone('Asia/Beirut'))), Transaction.usd_to_lbp == False
     ).count()
 
     response = {
