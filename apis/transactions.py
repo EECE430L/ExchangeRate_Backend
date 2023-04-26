@@ -78,7 +78,9 @@ def get_user_transactions():
     try:
         user_id = decode_token(auth_token)
 
-        transactions = Transaction.query.filter_by(user_id=user_id).all()
+        transactions = Transaction.query.filter_by(
+            user_id=user_id).order_by(Transaction.added_date.desc()).all()
+
         return jsonify(transactions_schema.dump(transactions))
 
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
