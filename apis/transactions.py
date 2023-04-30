@@ -3,6 +3,7 @@ from config.database import db
 from config.database import Transaction, transaction_schema, transactions_schema
 from config.database import User
 from services.auth import extract_auth_token, decode_token
+from services.utils import send_email
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
@@ -113,6 +114,8 @@ def get_users_excel_transactions():
     transactions_df = pd.DataFrame([(t.id, t.usd_amount, t.lbp_amount, t.usd_to_lbp, t.added_date, t.second_party, t.user_id) for t in transactions],
                                    columns=['ID', 'USD Amount', 'LBP Amount', 'USD to LBP', 'Added Date', 'Second Party', 'User ID'])
 
+    user = User.query.filter_by(id=user_id).first()
+
     # Create a new Excel workbook and add a worksheet
     wb = Workbook()
     ws = wb.active
@@ -126,6 +129,12 @@ def get_users_excel_transactions():
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
+
+    to_email = user.email
+    subject = "Your Transactions"
+    content = "Please find your transactions in the attached Excel file."
+
+    send_email(to_email, subject, content, output)
 
     response = make_response(output.read())
     response.headers['Content-Disposition'] = 'attachment; filename=transactions.xlsx'

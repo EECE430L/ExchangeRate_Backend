@@ -1,6 +1,8 @@
 from config.database import Transaction
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 from email.mime.multipart import MIMEMultipart
 import os
 
@@ -32,7 +34,7 @@ def getExchangeRates(START_DATE, END_DATE):
     return usd_to_lbp_rate, lbp_to_usd_rate
 
 
-def send_email(to_email, subject, content):
+def send_email(to_email, subject, content, attachment=None):
     msg = MIMEMultipart()
     sender = os.environ.get('EMAIL')
     msg['From'] = sender
@@ -40,6 +42,14 @@ def send_email(to_email, subject, content):
     msg['Subject'] = subject
 
     msg.attach(MIMEText(content, 'plain'))
+
+    if attachment:
+        part = MIMEBase('application', "octet-stream")
+        part.set_payload(attachment.getvalue())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition',
+                        'attachment; filename="transactions.xlsx"')
+        msg.attach(part)
 
     try:
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
