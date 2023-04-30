@@ -1,9 +1,13 @@
-from flask import Blueprint, request, jsonify, abort
+from flask import Blueprint, request, jsonify, abort, make_response
 from config.database import db
 from config.database import Transaction, transaction_schema, transactions_schema
 from config.database import User
 from services.auth import extract_auth_token, decode_token
+import pandas as pd
+from openpyxl import Workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
 import jwt
+import io
 
 
 transactions = Blueprint('transactions', __name__, url_prefix='/transaction')
@@ -85,3 +89,46 @@ def get_user_transactions():
 
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
         abort(401)
+
+
+@transactions.route('/excel-transactions', methods=['GET'], strict_slashes=False)
+def get_users_excel_transactions():
+
+    auth_token = extract_auth_token(request)
+    if not auth_token:
+        abort(401)
+
+    user_id = None
+
+    try:
+        user_id = decode_token(auth_token)
+
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
+        abort(401)
+
+    transactions = Transaction.query.filter_by(
+        user_id=user_id).order_by(Transaction.added_date.desc()).all()
+
+    # Convert transactions to a pandas DataFrame
+    transactions_df = pd.DataFrame([(t.id, t.usd_amount, t.lbp_amount, t.usd_to_lbp, t.added_date, t.second_party, t.user_id) for t in transactions],
+                                   columns=['ID', 'USD Amount', 'LBP Amount', 'USD to LBP', 'Added Date', 'Second Party', 'User ID'])
+
+    # Create a new Excel workbook and add a worksheet
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Transactions"
+
+    # Write the DataFrame to the worksheet
+    for r in dataframe_to_rows(transactions_df, index=False, header=True):
+        ws.append(r)
+
+    # Set up the response
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    response = make_response(output.read())
+    response.headers['Content-Disposition'] = 'attachment; filename=transactions.xlsx'
+    response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+    return response

@@ -9,18 +9,34 @@ statistics = Blueprint('statistics', __name__, url_prefix='/statistics')
 
 
 @statistics.route('/todays-transactions', methods=['GET'], strict_slashes=False)
-def get_todays_transactions():
+def get_todays_transactions(request):
+
+    args = request.args
+    startYear = int(args.get('startYear'))
+    startMonth = int(args.get('startMonth'))
+    startDay = int(args.get('startDay'))
+    endYear = int(args.get('endYear'))
+    endMonth = int(args.get('endMonth'))
+    endDay = int(args.get('endDay'))
+
+    try:
+        START_DATE = datetime.datetime(startYear, startMonth, startDay)
+        END_DATE = datetime.datetime(endYear, endMonth, endDay)
+    except ValueError:
+        return jsonify({"error": "Invalid date format. Please use yyyy-mm-dd."}), 400
+
     now = datetime.datetime.now(pytz.timezone('Asia/Beirut'))
     START_DATE = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
     END_DATE = now
 
     numberOfUSDtoLBPTransactions = Transaction.query.filter(
         Transaction.added_date.between(
-            START_DATE, datetime.datetime.now(pytz.timezone('Asia/Beirut'))), Transaction.usd_to_lbp == True
-    ).count()
+            START_DATE, END_DATE, Transaction.usd_to_lbp == True
+        )).count()
+
     numberOfLBPtoUSDTransactions = Transaction.query.filter(
         Transaction.added_date.between(
-            START_DATE, datetime.datetime.now(pytz.timezone('Asia/Beirut'))), Transaction.usd_to_lbp == False
+            START_DATE, END_DATE), Transaction.usd_to_lbp == False
     ).count()
 
     response = {
@@ -31,30 +47,40 @@ def get_todays_transactions():
     return jsonify(response), 200
 
 
-@statistics.route('/rates-percent-change', methods=['GET'], strict_slashes=False)
-def get_rates_percent_change():
+@ statistics.route('/rates-percent-change', methods=['GET'], strict_slashes=False)
+def get_rates_percent_change(request):
 
-    now = datetime.datetime.now(pytz.timezone('Asia/Beirut'))
-    YESTERDAY_START = datetime.datetime(
-        now.year, now.month, now.day, 0, 0, 0) - datetime.timedelta(days=1)
-    YESTERDAY_END = datetime.datetime(
-        now.year, now.month, now.day, 0, 0, 0) - datetime.timedelta(seconds=1)
-    TODAY_START = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
-    TODAY_END = now
+    args = request.args
+    startYear = int(args.get('startYear'))
+    startMonth = int(args.get('startMonth'))
+    startDay = int(args.get('startDay'))
+    endYear = int(args.get('endYear'))
+    endMonth = int(args.get('endMonth'))
+    endDay = int(args.get('endDay'))
 
-    yesterdayExchangeRate = getExchangeRates(YESTERDAY_START, YESTERDAY_END)
-    todayExchangeRate = getExchangeRates(
-        TODAY_START, datetime.datetime.now(pytz.timezone('Asia/Beirut')))
+    try:
+        START_DATE_BEGGINING = datetime.datetime(
+            startYear, startMonth, startDay)
+        END_DATE_END = datetime.datetime(endYear, endMonth, endDay)
+    except ValueError:
+        return jsonify({"error": "Invalid date format. Please use yyyy-mm-dd."}), 400
+
+    START_DATE_END = START_DATE_BEGGINING + datetime.timedelta(days=1)
+    END_DATE_START = END_DATE_END - datetime.timedelta(days=1)
+
+    startExchangeRate = getExchangeRates(START_DATE_BEGGINING, START_DATE_END)
+    endExchangeRate = getExchangeRates(
+        START_DATE_END, END_DATE_START)
 
     changeUSDtoLBP = None
-    if (yesterdayExchangeRate[0] != 0):
+    if (startExchangeRate[0] != 0):
         changeUSDtoLBP = (
-            (todayExchangeRate[0] - yesterdayExchangeRate[0]) / yesterdayExchangeRate[0]) * 100
+            (endExchangeRate[0] - startExchangeRate[0]) / startExchangeRate[0]) * 100
 
     changeLBPtoUSD = None
-    if (yesterdayExchangeRate[1] != 0):
+    if (startExchangeRate[1] != 0):
         changeLBPtoUSD = (
-            (todayExchangeRate[1] - yesterdayExchangeRate[1]) / yesterdayExchangeRate[1]) * 100
+            (endExchangeRate[1] - startExchangeRate[1]) / startExchangeRate[1]) * 100
 
     response = {
         "percent_change_USD_to_LBP": changeUSDtoLBP,
