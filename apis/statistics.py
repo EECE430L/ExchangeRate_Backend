@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import datetime
 from config.database import Transaction
 from services.utils import getExchangeRates
@@ -9,7 +9,7 @@ statistics = Blueprint('statistics', __name__, url_prefix='/statistics')
 
 
 @statistics.route('/todays-transactions', methods=['GET'], strict_slashes=False)
-def get_todays_transactions(request):
+def get_todays_transactions():
 
     args = request.args
     startYear = int(args.get('startYear'))
@@ -48,7 +48,7 @@ def get_todays_transactions(request):
 
 
 @ statistics.route('/rates-percent-change', methods=['GET'], strict_slashes=False)
-def get_rates_percent_change(request):
+def get_rates_percent_change():
 
     args = request.args
     startYear = int(args.get('startYear'))
