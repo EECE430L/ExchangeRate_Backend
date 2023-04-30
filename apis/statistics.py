@@ -29,15 +29,11 @@ def get_todays_transactions():
     START_DATE = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
     END_DATE = now
 
-    numberOfUSDtoLBPTransactions = Transaction.query.filter(
-        Transaction.added_date.between(
-            START_DATE, END_DATE, Transaction.usd_to_lbp == True
-        )).count()
+    numberOfUSDtoLBPTransactions = Transaction.query.filter(Transaction.added_date.between(
+        START_DATE, END_DATE), Transaction.usd_to_lbp == True).count()
 
-    numberOfLBPtoUSDTransactions = Transaction.query.filter(
-        Transaction.added_date.between(
-            START_DATE, END_DATE), Transaction.usd_to_lbp == False
-    ).count()
+    numberOfLBPtoUSDTransactions = Transaction.query.filter(Transaction.added_date.between(
+        START_DATE, END_DATE), Transaction.usd_to_lbp == False).count()
 
     response = {
         "num_usd_to_lbp_transactions": numberOfUSDtoLBPTransactions,
