@@ -50,22 +50,25 @@ def send_offer():
     amount_requested = request.json['amount_requested']
     amount_offered = request.json['amount_offered']
 
-    foundSender = User.query.filter_by(id=sender_id).first()
-    foundReceiver = User.query.filter_by(user_name=receiver).first()
+    sender = User.query.filter_by(id=sender_id).first()
+    receiver = User.query.filter_by(user_name=receiver).first()
 
-    if (not foundSender):
+    if (not sender):
         abort(404)
 
-    if (not foundReceiver):
+    if (not receiver):
         return jsonify({"receiver": f"A user with username {receiver} was not found"}), 404
-    elif (foundReceiver.id == sender_id):
+    elif (receiver.id == sender_id):
         return jsonify({"receiver": "You cannot send an offer to yourself"}), 400
 
-    senderUsername = foundSender.user_name
-    receiverUsername = foundReceiver.user_name
+    senderUsername = sender.user_name
+    receiverUsername = receiver.user_name
 
     offer = Offer(offerer=senderUsername, receiver=receiverUsername,
                   offered_amount=amount_offered, requested_amount=amount_requested, usd_to_lbp=usd_to_lbp)
+
+    send_email(receiver.email, "Offer Received",
+               f"{senderUsername} sent you an offer with the id : {offer.id}.")
 
     db.session.add(offer)
     db.session.commit()
