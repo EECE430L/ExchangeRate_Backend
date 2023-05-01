@@ -8,7 +8,7 @@ import pytz
 statistics = Blueprint('statistics', __name__, url_prefix='/statistics')
 
 
-@statistics.route('/todays-transactions', methods=['GET'], strict_slashes=False)
+@statistics.route('/number-transactions', methods=['GET'], strict_slashes=False)
 def get_todays_transactions():
 
     args = request.args

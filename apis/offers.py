@@ -39,11 +39,18 @@ def send_offer():
         errors['amount_requested'] = 'float is missing'
     elif (type(request.json['amount_requested']) != int and type(request.json['amount_requested']) != float):
         errors['amount_requested'] = 'must be an integer or a float'
+    elif (request.json['amount_requested'] < 0):
+        errors['amount_requested'] = 'must be a positive number'
 
     if ('amount_offered' not in request.json):
         errors['amount_offered'] = 'float is missing'
     elif (type(request.json['amount_offered']) != int and type(request.json['amount_offered']) != float):
         errors['amount_offered'] = 'must be an integer or a float'
+    elif (request.json['amount_offered'] < 0):
+        errors['amount_offered'] = 'must be a positive number'
+
+    if (len(errors) != 0):
+        return jsonify(errors), 400
 
     receiver = request.json['receiver']
     usd_to_lbp = request.json['usd_to_lbp']
@@ -138,14 +145,17 @@ def process_offer():
     errors = {}
 
     if ('offer_id' not in request.json):
-        return jsonify({errors["offer_id"]: "string is missing"}), 400
+        errors['offer_id'] = "string is missing"
     elif (type(request.json['offer_id']) != int):
-        return jsonify({errors["offer_id"]: "must be an integer"}), 400
+        errors['offer_id'] = 'must be an integer'
 
     if ('accepted' not in request.json):
-        return jsonify({errors["accepted"]: "boolean is missing"}), 400
+        errors['accepted'] = 'boolean is missing'
     elif (type(request.json['accepted']) != bool):
-        return jsonify({errors["accepted"]: "must be a boolean"}), 400
+        errors['accepted'] = 'must be a boolean'
+
+    if (len(errors) != 0):
+        return jsonify(errors), 400
 
     offer_id = request.json['offer_id']
     accepted = request.json['accepted']

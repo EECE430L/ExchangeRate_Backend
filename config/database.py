@@ -5,7 +5,6 @@ import datetime
 import pytz
 
 db = SQLAlchemy()
-# DB_CONFIG = 'mysql+pymysql://root:Rorokassab2002!@localhost:3306/exchange'
 
 
 class User(db.Model):
