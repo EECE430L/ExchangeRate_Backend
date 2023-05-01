@@ -36,9 +36,9 @@ def get_exchangeRateFluctuationsUSD():
         start_of_period = start_of_period.strftime("%Y-%m-%d")
         end_of_period = end_of_period.strftime("%Y-%m-%d")
         if (usd_to_lbp_rate == 0):
-            usd_to_lbp_rate = "No Data Available"
+            usd_to_lbp_rate = None
         if (lbp_to_usd_rate == 0):
-            lbp_to_usd_rate = "No Data Available"
+            lbp_to_usd_rate = None
 
         FluctuationResponse_ = FluctuationResponse(
             start_of_period, usd_to_lbp_rate, lbp_to_usd_rate)

@@ -68,7 +68,7 @@ def send_offer():
                   offered_amount=amount_offered, requested_amount=amount_requested, usd_to_lbp=usd_to_lbp)
 
     send_email(receiver.email, "Offer Received",
-               f"{senderUsername} sent you an offer with the id : {offer.id}.")
+               f"{senderUsername} sent you an offer")
 
     db.session.add(offer)
     db.session.commit()

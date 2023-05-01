@@ -116,16 +116,13 @@ def get_users_excel_transactions():
 
     user = User.query.filter_by(id=user_id).first()
 
-    # Create a new Excel workbook and add a worksheet
     wb = Workbook()
     ws = wb.active
     ws.title = "Transactions"
 
-    # Write the DataFrame to the worksheet
     for r in dataframe_to_rows(transactions_df, index=False, header=True):
         ws.append(r)
 
-    # Set up the response
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
