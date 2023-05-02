@@ -19,7 +19,7 @@ Getting Started
 
 These instructions will help you get a copy of the project up and running on your local machine for development and testing purposes.
 
-### Prerequisites
+## Prerequisites
 
 Before setting up the project, make sure you have the following installed:
 
@@ -27,7 +27,7 @@ Before setting up the project, make sure you have the following installed:
 -   Pip (Python package installer)
 -   Virtualenv (optional, but recommended)
 
-### Installation
+## Installation
 
 1. Clone the repository to your local machine : 
 
@@ -55,3 +55,9 @@ Before setting up the project, make sure you have the following installed:
 - flask run
 
 The API Should now be accessible at : http://localhost:5000/ 
+
+## Acknowledgements
+- [ChatGPT](https://chat.openai.com/)
+- [StackOverflow](https://stackoverflow.com/)
+- [GeeksforGeeks](https://www.geeksforgeeks.org/)
+- [YouTube](https://www.youtube.com/)
