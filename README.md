@@ -29,29 +29,29 @@ Before setting up the project, make sure you have the following installed:
 
 ### Installation
 
-- Clone the repository to your local machine : 
+1. Clone the repository to your local machine : 
 
-git clone https://github.com/EECE430L/ExchangeRate_Backend.git
+- git clone https://github.com/EECE430L/ExchangeRate_Backend.git
 
-- Change to the project directory : 
+2. Change to the project directory : 
 
-cd ExchangeRate_Backend
+- cd ExchangeRate_Backend
 
-- (Optional) Create a virtual environment and activate it:
+3. (Optional) Create a virtual environment and activate it:
 
-virtualenv venv
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+- virtualenv venv
+- source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
 
-- Install the required dependencies:
+4. Install the required dependencies:
 
-pip install -r requirements.txt
+- pip install -r requirements.txt
 
-- Set up your environment variables. You can use the .env.example file as a template. Rename it to .env and fill in the required information:
+5. Set up your environment variables. You can use the .env.example file as a template. Rename it to .env and fill in the required information:
 
-cp .env.example .env  # On Windows, use `copy .env.example .env`
+- cp .env.example .env  # On Windows, use `copy .env.example .env`
 
-- Run the development server:
+6. Run the development server:
 
-flask run
+- flask run
 
 The API Should now be accessible at : http://localhost:5000/ 
