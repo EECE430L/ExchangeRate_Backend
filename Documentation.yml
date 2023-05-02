@@ -1,0 +1,716 @@
+openapi: 3.0.3
+info:
+  title: Offers API
+  description: This is the Backend of an exchange rate application
+  version: 1.0.0
+servers:
+  - url: https://exchangeapp.azurewebsites.net/
+tags:
+  - name: Offers
+    description: Operations related to offers
+  - name: Fluctuations
+    description: Operations related to exchange rate fluctuations
+  - name: Statistics
+    description: Operations related to currency statistics
+  - name: Transactions
+    description: Operations related to transactions
+  - name: Users
+    description: Operations related to users
+  - name: Authentication
+    description: Operations related to authentication of users
+  - name: Exchange Rate
+    description: Operations related to the exchange rate
+
+paths:
+  /offer/:
+    post:
+      tags:
+        - Offers
+      summary: Send an offer
+      description: Send an offer from authenticated user to another user.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usd_to_lbp:
+                  type: boolean
+                  description: Indicates if the offer is in USD to LBP.
+                receiver:
+                  type: string
+                  description: The username of the receiver.
+                amount_requested:
+                  type: number
+                  format: float
+                  description: The amount requested by the sender.
+                amount_offered:
+                  type: number
+                  format: float
+                  description: The amount offered by the sender.
+              required:
+                - usd_to_lbp
+                - receiver
+                - amount_requested
+                - amount_offered
+      responses:
+        201:
+          description: Offer successfully sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Offer'
+        400:
+          description: Bad Request (validation errors or cannot send an offer to yourself)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        401:
+          description: Unauthorized (invalid or expired token)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+        404:
+          description: Not Found (sender or receiver not found)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /offer/sent:
+    get:
+      tags:
+        - Offers
+      summary: Get all offers sent by the user
+      description: Retrieves all offers sent by the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successfully retrieved sent offers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offer'
+        401:
+          description: Unauthorized (invalid or expired token)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+        404:
+          description: Not Found (user not found)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /offer/received:
+    get:
+      tags:
+        - Offers
+      summary: Get all offers received by the user
+      description: Retrieves all offers received by the authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successfully retrieved received offers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Offer'
+        401:
+          description: Unauthorized (invalid or expired token)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+        404:
+          description: Not Found (user not found)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /offer/process-offer:
+    post:
+      tags:
+        - Offers
+      summary: Process an offer
+      description: Allows the authenticated user to accept or reject an offer.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                offer_id:
+                  type: integer
+                  format: int32
+                  description: The ID of the offer.
+                accepted:
+                  type: boolean
+                  description: Indicates if the offer is accepted or rejected.
+              required:
+                - offer_id
+                - accepted
+      responses:
+        201:
+          description: Offer successfully processed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+        400:
+          description: Bad Request (validation errors)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        401:
+          description: Unauthorized (invalid or expired token, or not authorized to process the offer)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+        404:
+          description: Not Found (offer or user not found)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /fluctuations/:
+    get:
+      tags:
+        - Fluctuations
+      summary: Get exchange rate fluctuations between specified dates
+      description: Get the fluctuation of USD to LBP and LBP to USD exchange rates between two dates
+      parameters:
+        - in: query
+          name: startYear
+          schema:
+            type: integer
+          required: true
+          description: The start year of the date range
+        - in: query
+          name: startMonth
+          schema:
+            type: integer
+          required: true
+          description: The start month of the date range
+        - in: query
+          name: startDay
+          schema:
+            type: integer
+          required: true
+          description: The start day of the date range
+        - in: query
+          name: endYear
+          schema:
+            type: integer
+          required: true
+          description: The end year of the date range
+        - in: query
+          name: endMonth
+          schema:
+            type: integer
+          required: true
+          description: The end month of the date range
+        - in: query
+          name: endDay
+          schema:
+            type: integer
+          required: true
+          description: The end day of the date range
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FluctuationResponse'
+        400:
+          description: Invalid date format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an invalid date format
+  
+  /statistics/number-transactions:
+    get:
+      tags:
+        - Statistics
+      summary: Get number of transactions between specified dates
+      description: Get the number of USD to LBP transactions and LBP to USD transactions between two dates
+      parameters:
+        - name: startYear
+          in: query
+          description: Starting year of the date range
+          required: true
+          schema:
+            type: integer
+        - name: startMonth
+          in: query
+          description: Starting month of the date range
+          required: true
+          schema:
+            type: integer
+        - name: startDay
+          in: query
+          description: Starting day of the date range
+          required: true
+          schema:
+            type: integer
+        - name: endYear
+          in: query
+          description: Ending year of the date range
+          required: true
+          schema:
+            type: integer
+        - name: endMonth
+          in: query
+          description: Ending month of the date range
+          required: true
+          schema:
+            type: integer
+        - name: endDay
+          in: query
+          description: Ending day of the date range
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  num_usd_to_lbp_transactions:
+                    type: integer
+                    description: The number of USD to LBP transactions in the specified range
+                  num_lbp_to_usd_transactions:
+                    type: integer
+                    description: The number of LBP to USD transactions in the specified range
+        400:
+          description: Invalid date format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an invalid date format
+  /statistics/rates-percent-change:
+    get:
+      tags:
+        - Statistics
+      summary: Get exchange rates percent change between specified dates
+      description: Get the percent change of USD to LBP and LBP to USD exchange rates between two dates
+      parameters:
+        - name: startYear
+          in: query
+          description: Starting year of the date range
+          required: true
+          schema:
+            type: integer
+        - name: startMonth
+          in: query
+          description: Starting month of the date range
+          required: true
+          schema:
+            type: integer
+        - name: startDay
+          in: query
+          description: Starting day of the date range
+          required: true
+          schema:
+            type: integer
+        - name: endYear
+          in: query
+          description: Ending year of the date range
+          required: true
+          schema:
+            type: integer
+        - name: endMonth
+          in: query
+          description: Ending month of the date range
+          required: true
+          schema:
+            type: integer
+        - name: endDay
+          in: query
+          description: Ending day of the date range
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  percent_change_USD_to_LBP:
+                    type: number
+                    format: float
+                    description: The percentage change of USD to LBP exchange rate between the two dates
+                    nullable: true
+                  percent_change_LBP_to_USD:
+                    type: number
+                    format: float
+                    description: The percentage change of LBP to USD exchange rate between the two dates
+                    nullable: true
+        400:
+          description: Invalid date format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating an invalid date format
+
+  /transaction:
+    post:
+      tags:
+        - Transactions
+      summary: Create a new transaction
+      description: Allows the authenticated user to create a new transaction
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                usd_amount:
+                  type: number
+                  format: float
+                  description: The USD amount of the transaction
+                lbp_amount:
+                  type: number
+                  format: float
+                  description: The LBP amount of the transaction
+                usd_to_lbp:
+                  type: boolean
+                  description: True if the transaction is a USD to LBP exchange, false otherwise
+                receiver:
+                  type: string
+                  description: The username of the receiver, if applicable
+      responses:
+        201:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                  description: Error message for an invalid input field
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+                    description: Error message indicating that no token was provided
+    get:
+      tags:
+        - Transactions
+      summary: Retrieve the authenticated user's transactions
+      description: Get a list of the authenticated user's transactions, ordered by the added date in descending order
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+        401:
+          description: Unauthorized
+  /transaction/excel-transactions:
+    get:
+      tags:
+        - Transactions
+      summary: Retrieve the authenticated user's transactions in an Excel file
+      description: Get a list of the authenticated user's transactions, ordered by the added date in descending order, and send it as an Excel file attachment via email
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        401:
+          description: Unauthorized
+
+  /user:
+    post:
+      tags:
+        - Users
+      summary: Sign up a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+      responses:
+        201:
+          description: Successfully created user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+        409:
+          description: Conflict - username or email already taken
+    get:
+      tags:
+        - Users
+      summary: Retrieve user information
+      description: Retrieve the authenticated user's information
+      responses:
+        200:
+          description: Successfully retrieved user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Unauthorized
+        404:
+          description: Not found
+
+  /exchangeRate/:
+    get:
+      tags:
+        - Exchange Rate
+      summary: Get the latest exchange rate
+      description: Get the exchange rate for the last three days
+      responses:
+        200:
+          description: The latest exchange rate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  usd_to_lbp:
+                    type: number
+                    format: float
+                  lbp_to_usd:
+                    type: number
+                    format: float
+
+  /authentication/:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate a user
+      description: Get the authorization token for the user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: User authenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        400:
+          description: Bad Request
+        401:
+          description: Unauthorized
+        404:
+          description: Not Found
+
+components:
+  schemas:
+    Offer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        offerer:
+          type: string
+        receiver:
+          type: string
+        offered_amount:
+          type: number
+          format: float
+        requested_amount:
+          type: number
+          format: float
+        usd_to_lbp:
+          type: boolean
+      required:
+        - id
+        - offerer
+        - receiver
+        - offered_amount
+        - requested_amount
+        - usd_to_lbp
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        usd_amount:
+          type: number
+          format: float
+        lbp_amount:
+          type: number
+          format: float
+        usd_to_lbp:
+          type: boolean
+        second_party:
+          type: string
+        user_id:
+          type: integer
+          format: int32
+      required:
+        - id
+        - usd_amount
+        - lbp_amount
+        - usd_to_lbp
+        - second_party
+        - user_id
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user_name:
+          type: string
+          maxLength: 30
+        email:
+          type: string
+          format: email
+          maxLength: 50
+      required:
+        - id
+        - user_name
+        - email
+    FluctuationResponse:
+      type: object
+      properties:
+        start_of_period:
+          type: string
+          format: date
+          description: The start date of the period
+        usd_to_lbp_rate:
+          type: number
+          nullable: true
+          description: The USD to LBP exchange rate for the period
+        lbp_to_usd_rate:
+          type: number
+          nullable: true
+          description: The LBP to USD exchange rate for the period
+      required:
+        - start_of_period
+        - usd_to_lbp_rate
+        - lbp_to_usd_rate
+    
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
