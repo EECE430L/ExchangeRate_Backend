@@ -133,8 +133,4 @@ def get_users_excel_transactions():
 
     send_email(to_email, subject, content, output)
 
-    response = make_response(output.read())
-    response.headers['Content-Disposition'] = 'attachment; filename=transactions.xlsx'
-    response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-
-    return response
+    return jsonify({"message": "Email sent successfully"}), 200
