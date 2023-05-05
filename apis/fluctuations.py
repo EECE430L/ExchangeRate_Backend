@@ -24,6 +24,9 @@ def get_exchangeRateFluctuationsUSD():
     except ValueError:
         return jsonify({"error": "Invalid date format. Please use yyyy-mm-dd."}), 400
 
+    if (START_DATE > END_DATE):
+        return jsonify({"error": "Start date must be before end date."}), 400
+
     fluctuations = []
 
     current_date = START_DATE

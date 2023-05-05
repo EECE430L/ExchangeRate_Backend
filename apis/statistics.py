@@ -25,9 +25,8 @@ def get_todays_transactions():
     except ValueError:
         return jsonify({"error": "Invalid date format. Please use yyyy-mm-dd."}), 400
 
-    now = datetime.datetime.now(pytz.timezone('Asia/Beirut'))
-    START_DATE = datetime.datetime(now.year, now.month, now.day, 0, 0, 0)
-    END_DATE = now
+    if (START_DATE > END_DATE):
+        return jsonify({"error": "Start date must be before end date."}), 400
 
     numberOfUSDtoLBPTransactions = Transaction.query.filter(Transaction.added_date.between(
         START_DATE, END_DATE), Transaction.usd_to_lbp == True).count()
@@ -61,6 +60,9 @@ def get_rates_percent_change():
     except ValueError:
         return jsonify({"error": "Invalid date format. Please use yyyy-mm-dd."}), 400
 
+    if (START_DATE_BEGGINING > END_DATE_END):
+        return jsonify({"error": "Start date must be before end date."}), 400
+
     START_DATE_END = START_DATE_BEGGINING + datetime.timedelta(days=1)
     END_DATE_START = END_DATE_END - datetime.timedelta(days=1)
 
@@ -84,9 +86,3 @@ def get_rates_percent_change():
     }
 
     return jsonify(response), 200
-
-
-# last period volume
-# percentiles
-# average transaction amount
-# average transaction amount per user
