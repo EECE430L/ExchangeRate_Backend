@@ -9,6 +9,11 @@ import jwt
 users = Blueprint('users', __name__, url_prefix='/user')
 
 
+# Define the user routes
+
+# The user sends a POST request to the /user route with a JSON body containing the user_name, password and email.
+# The server responds with the user object.
+
 @users.route('/', methods=['POST'], strict_slashes=False)
 def signup():
 
@@ -55,6 +60,9 @@ def signup():
 
     return jsonify(user_schema.dump(user)), 201
 
+
+# The user sends a GET request to the /user route
+# The server responds with the user object.
 
 @users.route('/', methods=['GET'], strict_slashes=False)
 def get_user_info():

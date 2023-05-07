@@ -10,6 +10,11 @@ import jwt
 offers = Blueprint('offers', __name__, url_prefix='/offer')
 
 
+# Define the offer routes
+
+# The user sends a POST request to the /offer route with a JSON body containing the receiver, the amount requested, the amount offered and a boolean indicating whether the offer is USD to LBP or LBP to USD.
+# The server responds with the offer object.
+
 @offers.route('/', methods=['POST'], strict_slashes=False)
 def send_offer():
 
@@ -83,6 +88,9 @@ def send_offer():
     return jsonify(offer_schema.dump(offer)), 201
 
 
+# The user sends a GET request to the /sent route.
+# The server responds with all the offers sent by the user.
+
 @offers.route('/sent', methods=['GET'], strict_slashes=False)
 def get_all_user_sended_offers():
 
@@ -106,6 +114,9 @@ def get_all_user_sended_offers():
     return jsonify(offers_schema.dump(offers)), 200
 
 
+# The user sends a GET request to the /received route.
+# The server responds with all the offers received by the user.
+
 @offers.route('/received', methods=['GET'], strict_slashes=False)
 def get_all_user_received_offers():
 
@@ -128,6 +139,9 @@ def get_all_user_received_offers():
 
     return jsonify(offers_schema.dump(offers)), 200
 
+
+# The user sends a POST request to the /process-offer route with a JSON body containing the offer id and a boolean indicating whether the offer is accepted or not.
+# The server responds with the transactions created if the offer was accepted.
 
 @offers.route('/process-offer', methods=['POST'], strict_slashes=False)
 def process_offer():

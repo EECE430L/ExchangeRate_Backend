@@ -7,6 +7,8 @@ import pytz
 db = SQLAlchemy()
 
 
+# Define the models
+
 class User(db.Model):
     __tablename__ = 'user'
     __table_args__ = {'schema': 'ExchangeRate'}

@@ -9,6 +9,10 @@ exchangeRate = Blueprint('exchangeRate', __name__,
                          url_prefix='/exchangeRate')
 
 
+# Define the exchange rate routes
+# The user sends a GET request to the /exchangeRate route.
+# The server responds with the exchange rate of the last 3 days.
+
 @exchangeRate.route('/', methods=['GET'], strict_slashes=False)
 def get_exchange_rate():
 

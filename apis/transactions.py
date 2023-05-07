@@ -13,6 +13,13 @@ import io
 
 transactions = Blueprint('transactions', __name__, url_prefix='/transaction')
 
+# Define the transaction routes
+
+# The user sends a POST request to the /transaction route with a JSON body containing the amount in USD,
+# the amount in LBP and a boolean indicating whether the transaction is USD to LBP or LBP to USD,
+# and optionally the receiver (who gets set to Third Party by default).
+# The server responds with the transaction object.
+
 
 @transactions.route('/', methods=['POST'], strict_slashes=False)
 def create_transaction():
@@ -73,6 +80,9 @@ def create_transaction():
     return jsonify(transaction_schema.dump(transaction)), 201
 
 
+# The user sends a GET request to the /transaction route.
+# The server responds with the user's transactions
+
 @transactions.route('/', methods=['GET'], strict_slashes=False)
 def get_user_transactions():
 
@@ -91,6 +101,9 @@ def get_user_transactions():
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
         abort(401)
 
+
+# The user sends a GET request to the /transaction/excel-transactions route.
+# An email is sent to the user containing the user's transactions in an Excel file.
 
 @transactions.route('/excel-transactions', methods=['GET'], strict_slashes=False)
 def get_users_excel_transactions():

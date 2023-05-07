@@ -8,6 +8,11 @@ import pytz
 statistics = Blueprint('statistics', __name__, url_prefix='/statistics')
 
 
+# Define the statistics routes
+
+# The user sends a GET request to the /statistics/number-transactions route with parameters containing the start and end dates.
+# The server responds with the number of transactions between the start and end dates.
+
 @statistics.route('/number-transactions', methods=['GET'], strict_slashes=False)
 def get_todays_transactions():
 
@@ -41,8 +46,11 @@ def get_todays_transactions():
 
     return jsonify(response), 200
 
+# The user sends a GET request to the /statistics/rates-percent-change route with parameters containing the start and end dates.
+# The server responds with the percent change of the exchange rates between the start and end dates.
 
-@ statistics.route('/rates-percent-change', methods=['GET'], strict_slashes=False)
+
+@statistics.route('/rates-percent-change', methods=['GET'], strict_slashes=False)
 def get_rates_percent_change():
 
     args = request.args

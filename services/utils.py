@@ -7,6 +7,8 @@ from email.mime.multipart import MIMEMultipart
 import os
 
 
+# Helper function to get the exchange rates
+
 def getExchangeRates(START_DATE, END_DATE):
     usd_to_lbp_transactions = Transaction.query.filter(
         Transaction.added_date.between(
@@ -35,6 +37,8 @@ def getExchangeRates(START_DATE, END_DATE):
 
 
 # Code provided by ChatGPT
+# Helper function to send an email
+
 def send_email(to_email, subject, content, attachment=None):
     msg = MIMEMultipart()
     sender = os.environ.get('EMAIL')

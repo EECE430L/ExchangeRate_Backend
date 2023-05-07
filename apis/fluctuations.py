@@ -7,6 +7,10 @@ from services.fluctuationResponse import FluctuationResponse
 fluctuations = Blueprint('fluctuations', __name__,
                          url_prefix='/fluctuations')
 
+# Define the fluctuations routes
+# The user sends a GET request to the /fluctuations route with parameters containing the start and end dates.
+# The server responds with the exchange rate fluctuations between the start and end dates.
+
 
 @fluctuations.route('/', methods=['GET'], strict_slashes=False)
 def get_exchangeRateFluctuationsUSD():

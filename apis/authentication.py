@@ -7,6 +7,9 @@ authentication = Blueprint('authentication', __name__,
                            url_prefix='/authentication')
 
 
+# Define the authentication routes
+# The user sends a POST request to the /authentication route with a JSON body containing the user_name and password.
+
 @authentication.route('/', methods=['POST'], strict_slashes=False)
 def authenticate():
 

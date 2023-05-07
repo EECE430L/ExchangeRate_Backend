@@ -29,6 +29,8 @@ bcrypt.app = app
 bcrypt.init_app(app)
 
 
+# Register the blueprints
+
 app.register_blueprint(transactions)
 app.register_blueprint(exchangeRate)
 app.register_blueprint(users)
@@ -37,6 +39,8 @@ app.register_blueprint(statistics)
 app.register_blueprint(fluctuations)
 app.register_blueprint(offers)
 
+
+# Define the home page
 
 @app.route('/', methods=['GET'])
 def home():
