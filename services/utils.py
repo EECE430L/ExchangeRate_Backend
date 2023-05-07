@@ -34,6 +34,7 @@ def getExchangeRates(START_DATE, END_DATE):
     return usd_to_lbp_rate, lbp_to_usd_rate
 
 
+# Code provided by ChatGPT
 def send_email(to_email, subject, content, attachment=None):
     msg = MIMEMultipart()
     sender = os.environ.get('EMAIL')

@@ -111,6 +111,7 @@ def get_users_excel_transactions():
         user_id=user_id).order_by(Transaction.added_date.desc()).all()
 
     # Convert transactions to a pandas DataFrame
+    # Code provided by ChatGPT
     transactions_df = pd.DataFrame([(t.id, t.usd_amount, t.lbp_amount, t.usd_to_lbp, t.added_date, t.second_party, t.user_id) for t in transactions],
                                    columns=['ID', 'USD Amount', 'LBP Amount', 'USD to LBP', 'Added Date', 'Second Party', 'User ID'])
 
